@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExoticBites Ultra | The Future of Food</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&family=Bangers&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --neon-pink: #ff00ff;
+            --neon-cyan: #00ffff;
+            --bg-dark: #08080a;
+            --card-bg: #121218;
+            --glass: rgba(255, 255, 255, 0.03);
+            --accent-grad: linear-gradient(45deg, #ff00ff, #00ffff);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg-dark); color: white; line-height: 1.5; overflow-x: hidden; }
+
+        /* UI NAVEGACIÓN */
+        header {
+            background: rgba(8, 8, 10, 0.9);
+            padding: 1.2rem 5%;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo { font-family: 'Bangers', cursive; font-size: 2.5rem; color: var(--neon-cyan); text-shadow: 0 0 15px var(--neon-cyan); cursor: pointer; }
+        
+        .nav-actions { display: flex; gap: 25px; align-items: center; }
+        .ui-btn { background: var(--glass); border: 1px solid #333; padding: 8px 15px; border-radius: 50px; cursor: pointer; transition: 0.3s; position: relative; }
+        .ui-btn:hover { border-color: var(--neon-pink); background: rgba(255,0,255,0.1); }
+        .badge { position: absolute; top: -5px; right: -5px; background: var(--neon-pink); color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 50%; }
+
+        /* SECCIONES */
+        section { padding: 120px 8% 60px; }
+        .section-title { font-family: 'Bangers'; font-size: 4rem; text-align: center; margin-bottom: 50px; background: var(--accent-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* GRID DE PRODUCTOS Y RECETAS */
+        .main-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 35px; }
+
+        .item-card { background: var(--card-bg); border-radius: 30px; overflow: hidden; border: 1px solid var(--glass); position: relative; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .item-card:hover { transform: scale(1.03); border-color: var(--neon-cyan); box-shadow: 0 20px 40px rgba(0, 255, 255, 0.1); }
+        
+        .item-img { width: 100%; height: 280px; object-fit: cover; filter: grayscale(20%); transition: 0.5s; }
+        .item-card:hover .item-img { filter: grayscale(0%); }
+
+        .content { padding: 25px; }
+        .tag { display: inline-block; padding: 4px 12px; border-radius: 50px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; background: rgba(0, 255, 255, 0.2); color: var(--neon-cyan); }
+
+        .price-tag { font-size: 1.5rem; font-weight: 900; color: var(--neon-pink); margin: 10px 0; }
+
+        /* BOTONES */
+        .btn-action { width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-primary { background: var(--neon-cyan); color: #000; margin-top: 10px; }
+        .btn-secondary { background: #222; color: white; margin-top: 10px; }
+        .btn-action:active { transform: scale(0.95); }
+
+        /* MODALES DINÁMICOS */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
+        .modal.active { display: flex; animation: fadeIn 0.3s; }
+        .modal-content { background: #1a1a20; width: 100%; max-width: 800px; border-radius: 30px; padding: 40px; position: relative; max-height: 90vh; overflow-y: auto; border: 1px solid #333; }
+        .close-modal { position: absolute; top: 20px; right: 20px; font-size: 2rem; cursor: pointer; color: #555; }
+
+        /* CARRITO PANEL */
+        #side-cart { position: fixed; right: -450px; top: 0; width: 400px; height: 100%; background: #0f0f15; z-index: 3000; padding: 40px; transition: 0.6s cubic-bezier(0.19, 1, 0.22, 1); border-left: 1px solid #333; }
+        #side-cart.open { right: 0; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: var(--glass); padding: 15px; border-radius: 15px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+        /* PASOS RECETA */
+        .steps-list { list-style: none; margin-top: 20px; }
+        .step-item { display: flex; gap: 20px; margin-bottom: 15px; align-items: flex-start; }
+        .step-num { background: var(--neon-cyan); color: black; min-width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">EXOTICBITES</div>
+        <div class="nav-actions">
+            <div class="ui-btn" onclick="toggleCart()">
+                🛒 Carrito <span class="badge" id="cart-badge">0</span>
+            </div>
+        </div>
+    </header>
+
+    <div id="side-cart">
+        <h2 style="font-family: 'Bangers'; color: var(--neon-pink); margin-bottom: 30px;">Tu Compra</h2>
+        <div id="cart-list"></div>
+        <div style="margin-top: 30px; border-top: 1px solid #333; padding-top: 20px;">
+            <h3>Total: <span id="cart-total" style="color: var(--neon-cyan);">$0.00</span></h3>
+            <button class="btn-action btn-primary" style="margin-top: 20px;" onclick="checkout()">Finalizar Pedido</button>
+            <button class="btn-action btn-secondary" onclick="toggleCart()">Seguir Explorando</button>
+        </div>
+    </div>
+
+    <div class="modal" id="info-modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div id="modal-data"></div>
+        </div>
+    </div>
+
+    <section id="recetas">
+        <h2 class="section-title">Manual de Recetas</h2>
+        <div class="main-grid" id="recipes-container"></div>
+    </section>
+
+    <section id="tienda" style="background: rgba(255,255,255,0.02);">
+        <h2 class="section-title">The Secret Shop</h2>
+        <div class="main-grid" id="shop-container"></div>
+    </section>
+
+    <script>
+        // BASE DE DATOS LOCAL
+        const recipes = [
+            {
+                id: 1,
+                name: "Pasta Glitch Neón",
+                tag: "Bioluminiscente",
+                img: "https://images.unsplash.com/photo-1473093226795-af9932fe5856?w=600",
+                desc: "Una pasta artesanal impregnada con clorofila activada que brilla bajo luz ultravioleta.",
+                steps: [
+                    "Infusionar el agua de cocción con extracto de riboflavina natural.",
+                    "Hervir la pasta durante 8 minutos hasta obtener textura al dente.",
+                    "Preparar la salsa de coco y lima con perlas de tapioca.",
+                    "Servir en plato oscuro y encender luz UV para el efecto visual."
+                ],
+                ingredients: ["Fideos de cristal", "Riboflavina", "Leche de coco", "Limas ácidas"]
+            },
+            {
+                id: 2,
+                name: "Esferas de Humo Crío",
+                tag: "Efecto Criogénico",
+                img: "https://images.unsplash.com/photo-1510626176961-4b57d4fbad03?w=600",
+                desc: "Bombones de chocolate amargo que liberan una densa niebla de sabor mentolado al morderlos.",
+                steps: [
+                    "Templar chocolate al 70% de cacao.",
+                    "Crear cápsulas huecas usando moldes esféricos.",
+                    "Inyectar esencia de menta fría y sellar con nitrógeno líquido (uso experto).",
+                    "Decorar con polvo de plata comestible."
+                ],
+                ingredients: ["Chocolate 70%", "Nitrógeno Líquido", "Esencia de Menta", "Polvo de Plata"]
+            }
+        ];
+
+        const products = [
+            {
+                id: 101,
+                name: "Delantal 'Chemical Master'",
+                price: 35.00,
+                img: "https://images.unsplash.com/photo-1590736961645-813f3807279c?w=400",
+                desc: "Tela resistente a ácidos orgánicos y manchas de colorante neón. Diseño exclusivo para cocineros locos."
+            },
+            {
+                id: 102,
+                name: "Polvos Efervescentes 'Planeta X'",
+                price: 12.50,
+                img: "https://images.unsplash.com/photo-1550989460-0adf9ea622e2?w=400",
+                desc: "Añade este polvo a cualquier bebida para crear una reacción de burbujas infinitas y cambio de color."
+            },
+            {
+                id: 103,
+                name: "Taza Térmica Glitch",
+                price: 18.00,
+                img: "https://images.unsplash.com/photo-1514228742587-6b1558fbed39?w=400",
+                desc: "Muestra un diseño oculto de una receta secreta cuando le pones líquido caliente."
+            }
+        ];
+
+        let cart = [];
+
+        // RENDERIZAR RECETAS
+        const recipesContainer = document.getElementById('recipes-container');
+        recipes.forEach(r => {
+            recipesContainer.innerHTML += `
+                <div class="item-card">
+                    <img src="${r.img}" class="item-img">
+                    <div class="content">
+                        <span class="tag">${r.tag}</span>
+                        <h3>${r.name}</h3>
+                        <button class="btn-action btn-primary" onclick="showRecipeDetails(${r.id})">Ver Pasos y Secretos</button>
+                    </div>
+                </div>
+            `;
+        });
+
+        // RENDERIZAR TIENDA
+        const shopContainer = document.getElementById('shop-container');
+        products.forEach(p => {
+            shopContainer.innerHTML += `
+                <div class="item-card">
+                    <img src="${p.img}" class="item-img">
+                    <div class="content">
+                        <h3>${p.name}</h3>
+                        <div class="price-tag">$${p.price.toFixed(2)}</div>
+                        <button class="btn-action btn-secondary" onclick="showProductDetails(${p.id})">Descripción</button>
+                        <button class="btn-action btn-primary" onclick="addToCart(${p.id})">Añadir al Carrito</button>
+                    </div>
+                </div>
+            `;
+        });
+
+        // FUNCIONES DE MODAL
+        function showRecipeDetails(id) {
+            const r = recipes.find(item => item.id === id);
+            const data = `
+                <h2 style="font-family:'Bangers'; color:var(--neon-cyan)">${r.name}</h2>
+                <p style="margin: 20px 0; color: #ccc;">${r.desc}</p>
+                <h4 style="color:var(--neon-pink)">Ingredientes Necesarios:</h4>
+                <ul style="margin: 10px 20px;">${r.ingredients.map(i => `<li>${i}</li>`).join('')}</ul>
+                <h4 style="margin-top: 30px; color:var(--neon-pink)">Pasos de Preparación:</h4>
+                <div class="steps-list">
+                    ${r.steps.map((s, i) => `
+                        <div class="step-item">
+                            <div class="step-num">${i+1}</div>
+                            <p>${s}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            document.getElementById('modal-data').innerHTML = data;
+            document.getElementById('info-modal').classList.add('active');
+        }
+
+        function showProductDetails(id) {
+            const p = products.find(item => item.id === id);
+            const data = `
+                <h2 style="font-family:'Bangers'; color:var(--neon-pink)">${p.name}</h2>
+                <div style="display:flex; gap:30px; margin-top:20px;">
+                    <img src="${p.img}" style="width:200px; border-radius:20px;">
+                    <div>
+                        <p style="font-size:1.2rem;">${p.desc}</p>
+                        <div class="price-tag">$${p.price.toFixed(2)}</div>
+                        <button class="btn-action btn-primary" onclick="addToCart(${p.id}); closeModal();">Lo quiero ahora</button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('modal-data').innerHTML = data;
+            document.getElementById('info-modal').classList.add('active');
+        }
+
+        function closeModal() { document.getElementById('info-modal').classList.remove('active'); }
+
+        // LÓGICA DE CARRITO
+        function toggleCart() { document.getElementById('side-cart').classList.toggle('open'); }
+
+        function addToCart(id) {
+            const p = products.find(item => item.id === id);
+            cart.push(p);
+            updateCart();
+            if(!document.getElementById('side-cart').classList.contains('open')) toggleCart();
+        }
+
+        function updateCart() {
+            const cartList = document.getElementById('cart-
